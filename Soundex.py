@@ -10,24 +10,15 @@ def get_soundex_code(c):
     }
     return mapping.get(c, '0')  # Default to '0' for non-mapped characters
 
-
 def generate_soundex(name):
     if not name:
         return ""
 
-    # Start with the first letter (capitalized)
-    soundex = name[0].upper()
-    prev_code = get_soundex_code(soundex)
+    first_letter = name[0].upper()
+    soundex_codes = [get_soundex_code(char) for char in name[1:].upper()]
 
-    for char in name[1:]:
-        code = get_soundex_code(char)
-        if code != '0' and code != prev_code:
-            soundex += code
-            prev_code = code
-        if len(soundex) == 4:
-            break
+    # Filter out '0' codes and remove consecutive duplicates
+    filtered_codes = [code for i, code in enumerate(soundex_codes) if code != '0' and (i == 0 or code != soundex_codes[i - 1])]
 
-    # Pad with zeros if necessary
-    soundex = soundex.ljust(4, '0')
-
-    return soundex
+    soundex = first_letter + ''.join(filtered_codes)
+    return soundex[:4].ljust(4, '0')
